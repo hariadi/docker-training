@@ -1,0 +1,37 @@
+version: '3.3'
+services:
+  app:
+    image: wordpress
+    deploy:
+      replicas: 3
+    ports:
+      - 80:80
+
+  mail:
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  db:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD-rootpass}"
+      MYSQL_DATABASE: "${DB_DATABASE-wordpress}"
+      MYSQL_USER: "${DB_USERNAME-wordpress}"
+      MYSQL_PASSWORD: "${DB_PASSWORD-wordpress}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - db-data:/var/lib/mysql
+
+  db-client:
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    links:
+      - db:db
+
+volumes:
+  db-data:
